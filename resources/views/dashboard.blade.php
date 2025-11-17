@@ -16,7 +16,7 @@
                     <a href="#" class="bg-gradient-to-r from-green-500 to-green-700 text-white font-bold px-8 py-4 rounded-full shadow-lg hover:from-green-400 hover:to-green-600 transition-all duration-300 text-center">
                         Join Our Community
                     </a>
-                    <a href="#" class="border-2 border-green-400 text-green-300 font-bold px-8 py-4 rounded-full shadow-lg hover:bg-green-400 hover:text-white transition-all duration-300 text-center">
+                    <a href="{{ route('events.index') }}" class="border-2 border-green-400 text-green-300 font-bold px-8 py-4 rounded-full shadow-lg hover:bg-green-400 hover:text-white transition-all duration-300 text-center">
                         Explore Events
                     </a>
                 </div>

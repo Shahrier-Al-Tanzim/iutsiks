@@ -5,6 +5,9 @@
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
+        <!-- Store redirect URL -->
+        <input type="hidden" name="redirect_to" value="{{ request()->query('redirect_to', route('dashboard')) }}">
+
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />

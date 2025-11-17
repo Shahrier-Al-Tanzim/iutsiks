@@ -28,7 +28,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $redirectTo = $request->input('redirect_to', route('dashboard'));
+        return redirect($redirectTo);
     }
 
     /**
@@ -42,6 +43,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        $redirectTo = $request->input('redirect_to', url()->previous());
+        return redirect($redirectTo);
     }
 }

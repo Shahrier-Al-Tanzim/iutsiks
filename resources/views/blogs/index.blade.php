@@ -1,5 +1,4 @@
 {{-- filepath: resources/views/blogs/index.blade.php --}}
-@auth
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-2xl text-green-400 dark:text-green-300 leading-tight">
@@ -17,10 +16,12 @@
 
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl text-green-200">All Blogs</h3>
-                <a href="{{ route('blogs.create') }}"
-                   class="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded shadow">
-                    + New Blog
-                </a>
+                @auth
+                    <a href="{{ route('blogs.create') }}"
+                       class="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded shadow">
+                        + New Blog
+                    </a>
+                @endauth
             </div>
 
             <div class="bg-gray-800 rounded-lg shadow overflow-x-auto">
@@ -52,19 +53,21 @@
                                 <td class="px-4 py-2 flex gap-2">
                                     <a href="{{ route('blogs.show', $blog) }}"
                                        class="text-green-400 hover:underline">View</a>
-                                    @if($blog->author_id === auth()->id())
-                                        <a href="{{ route('blogs.edit', $blog) }}"
-                                           class="text-yellow-400 hover:underline">Edit</a>
-                                        <form action="{{ route('blogs.destroy', $blog) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="text-red-400 hover:underline"
-                                                onclick="return confirm('Delete this blog?')">
-                                                Delete
-                                            </button>
-                                        </form>
-                                    @endif
+                                    @auth
+                                        @if($blog->author_id === auth()->id())
+                                            <a href="{{ route('blogs.edit', $blog) }}"
+                                               class="text-yellow-400 hover:underline">Edit</a>
+                                            <form action="{{ route('blogs.destroy', $blog) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="text-red-400 hover:underline"
+                                                    onclick="return confirm('Delete this blog?')">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        @endif
+                                    @endauth
                                 </td>
                             </tr>
                         @empty
@@ -82,10 +85,3 @@
         </div>
     </div>
 </x-app-layout>
-@else
-<div class="flex items-center justify-center min-h-screen bg-gray-900">
-    <a href="{{ route('login') }}" class="bg-green-700 hover:bg-green-600 text-white px-6 py-4 rounded shadow text-xl font-bold">
-        PLEASE LOG IN TO CONTINUE
-    </a>
-</div>
-@endauth

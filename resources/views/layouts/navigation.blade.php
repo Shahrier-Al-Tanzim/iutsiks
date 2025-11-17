@@ -42,6 +42,7 @@
                             <!-- Authentication -->
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
+                                <input type="hidden" name="redirect_to" value="{{ url()->current() }}">
 
                                 <x-dropdown-link :href="route('logout')"
                                         onclick="event.preventDefault();
@@ -52,10 +53,10 @@
                         </x-slot>
                     </x-dropdown>
                 @else
-                    <a href="{{ route('login') }}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
+                    <a href="{{ route('login') }}?redirect_to={{ url()->current() }}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
                         {{ __('Log In') }}
                     </a>
-                    <a href="{{ route('register') }}" class="ms-4 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
+                    <a href="{{ route('register') }}?redirect_to={{ url()->current() }}" class="ms-4 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
                         {{ __('Register') }}
                     </a>
                 @endauth
@@ -97,6 +98,7 @@
                     <!-- Authentication -->
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
+                        <input type="hidden" name="redirect_to" value="{{ url()->current() }}">
 
                         <x-responsive-nav-link :href="route('logout')"
                                 onclick="event.preventDefault();
@@ -109,10 +111,10 @@
         @else
             <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
                 <div class="space-y-1">
-                    <x-responsive-nav-link :href="route('login')">
+                    <x-responsive-nav-link :href="route('login') . '?redirect_to=' . url()->current()">
                         {{ __('Log In') }}
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('register')">
+                    <x-responsive-nav-link :href="route('register') . '?redirect_to=' . url()->current()">
                         {{ __('Register') }}
                     </x-responsive-nav-link>
                 </div>
