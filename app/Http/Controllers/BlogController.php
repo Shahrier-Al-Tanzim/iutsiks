@@ -91,7 +91,7 @@ class BlogController extends Controller
 
         $path = $blog->image;
         if($request->hasFile('image')) {
-            $path = $request->file('image')->store('blog_images', 'publc');
+            $path = $request->file('image')->store('blog_images', 'public');
         }
         $blog->update([
             'title' => $request->title,
