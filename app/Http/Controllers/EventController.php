@@ -39,14 +39,18 @@ class EventController extends Controller
             'description' => 'required|string',
             'event_date' => 'required|date',
             'event_time' => 'required',
+            'image' => 'nullable|image|mimes:png,jpg,jpeg,gif|max:2048'
         ]);
+
+        $path = $request->file('image') ? $request->file('image')->store('event_images', 'public') : null;
 
         Event::create([
             'title' => $request->title,
             'description' => $request->description,
             'event_date' => $request->event_date,
             'event_time' => $request->event_time,
-            'author_id' => auth()->id(), // ✅ added
+            'author_id' => auth()->id(),
+            'image' => $path
         ]);
 
         return redirect()->route('events.index')->with('success', 'Event created!');
@@ -87,13 +91,20 @@ class EventController extends Controller
             'description' => 'required|string',
             'event_date' => 'required|date',
             'event_time' => 'required',
+            'image' => 'nullable|image|mimes:png,jpg,jpeg,gif|max:2048'
         ]);
+
+        $path = $event->image;
+        if($request->hasFile('image')) {
+            $path = $request->file('image')->store('event_images', 'public');
+        }
 
         $event->update([
             'title' => $request->title,
             'description' => $request->description,
             'event_date' => $request->event_date,
             'event_time' => $request->event_time,
+            'image' => $path
         ]);
 
         return redirect()->route('events.index')->with('success', 'Event updated!');
@@ -106,6 +117,10 @@ class EventController extends Controller
     {
         if ($event->author_id !== auth()->id()) {
             abort(403);
+        }
+
+        if($event->image) {
+            \Storage::disk('public')->delete($event->image);
         }
 
         $event->delete();

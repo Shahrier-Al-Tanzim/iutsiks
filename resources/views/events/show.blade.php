@@ -11,6 +11,11 @@
                 <h3 class="text-2xl text-green-200 mb-4">{{ $event->title }}</h3>
                 <div class="mb-2 text-gray-300">By {{ $event->author->name ?? 'Unknown' }} on {{ $event->event_date }} at {{ $event->event_time }}</div>
                 <div class="mb-8 text-gray-100 whitespace-pre-line">{{ $event->description }}</div>
+                @if ($event->image)
+                    <div class="mb-6">
+                        <img src="{{ asset('storage/' . $event->image) }}" class="max-w-xs max-h-48 mx-auto object-cover rounded">
+                    </div>
+                @endif
                 <div class="flex gap-2">
                     <a href="{{ route('events.index') }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded">Back</a>
                     @auth

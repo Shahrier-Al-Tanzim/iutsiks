@@ -25,6 +25,7 @@
                             <th class="px-4 py-2 text-left">Title</th>
                             <th class="px-4 py-2 text-left">Date</th>
                             <th class="px-4 py-2 text-left">Time</th>
+                            <th class="px-4 py-2 text-left">Image</th>
                             <th class="px-4 py-2 text-left">Author</th>
                             <th class="px-4 py-2 text-left">Actions</th>
                         </tr>
@@ -35,6 +36,13 @@
                                 <td class="px-4 py-2">{{ $event->title }}</td>
                                 <td class="px-4 py-2">{{ $event->event_date }}</td>
                                 <td class="px-4 py-2">{{ $event->event_time }}</td>
+                                <td class="px-4 py-2">
+                                    @if($event->image)
+                                        <img src="{{ asset('storage/' . $event->image) }}" class="w-16 h-16 object-cover rounded">
+                                    @else
+                                        <span class="text-gray-500">No image</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-2">{{ $event->author->name ?? 'Unknown' }}</td>
                                 <td class="px-4 py-2 flex gap-2">
                                     <a href="{{ route('events.show', $event) }}" class="text-green-400 hover:underline">View</a>
@@ -52,7 +60,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-6 text-center text-gray-400">No events found.</td>
+                                <td colspan="6" class="px-4 py-6 text-center text-gray-400">No events found.</td>
                             </tr>
                         @endforelse
                     </tbody>
