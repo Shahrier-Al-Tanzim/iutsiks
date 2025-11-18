@@ -29,6 +29,9 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'role' => 'member',
+            'phone' => fake()->phoneNumber(),
+            'student_id' => fake()->unique()->numerify('IUT-###-###'),
         ];
     }
 
@@ -39,6 +42,46 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Create a super admin user.
+     */
+    public function superAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'super_admin',
+        ]);
+    }
+
+    /**
+     * Create a content admin user.
+     */
+    public function contentAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'content_admin',
+        ]);
+    }
+
+    /**
+     * Create an event admin user.
+     */
+    public function eventAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'event_admin',
+        ]);
+    }
+
+    /**
+     * Create a member user.
+     */
+    public function member(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'member',
         ]);
     }
 }

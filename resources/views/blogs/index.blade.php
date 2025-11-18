@@ -1,87 +1,74 @@
-{{-- filepath: resources/views/blogs/index.blade.php --}}
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-2xl text-green-400 dark:text-green-300 leading-tight">
-            {{ __('Blogs') }}
-        </h2>
-    </x-slot>
+<x-page-layout>
+    <x-slot name="title">Blogs - SIKS</x-slot>
+    
+    <!-- Page Header -->
+    <x-section background="primary" padding="medium">
+        <div class="text-center">
+            <h1 class="siks-heading-1 text-white mb-4">Our Blog</h1>
+            <p class="siks-body text-white/90 max-w-2xl mx-auto">
+                Stay updated with the latest articles, insights, and Islamic content from our community.
+            </p>
+        </div>
+    </x-section>
 
-    <div class="py-8 bg-gray-900 min-h-screen">
-        <div class="max-w-4xl mx-auto px-4">
+    <!-- Main Content -->
+    <x-section>
+        <div class="max-w-6xl mx-auto">
             @if(session('success'))
-                <div class="mb-4 p-3 rounded bg-green-800 text-green-100">
-                    {{ session('success') }}
+                <div class="mb-6 p-4 rounded-lg bg-green-50 border border-green-200">
+                    <p class="text-green-800">{{ session('success') }}</p>
                 </div>
             @endif
 
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl text-green-200">All Blogs</h3>
-                @auth
-                    <a href="{{ route('blogs.create') }}"
-                       class="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded shadow">
-                        + New Blog
+            <!-- Header Actions -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                <div>
+                    <h2 class="siks-heading-2 mb-2">Latest Articles</h2>
+                    <p class="siks-body text-gray-600">
+                        {{ $blogs->total() }} {{ Str::plural('article', $blogs->total()) }} published
+                    </p>
+                </div>
+                @can('create', App\Models\Blog::class)
+                    <a href="{{ route('blogs.create') }}" class="siks-btn-primary">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Write New Article
                     </a>
-                @endauth
+                @endcan
             </div>
 
-            <div class="bg-gray-800 rounded-lg shadow overflow-x-auto">
-                <table class="min-w-full text-gray-200">
-                    <thead>
-                        <tr class="bg-green-900">
-                            <th class="px-4 py-2 text-left">Title</th>
-                            <th class="px-4 py-2 text-left">Content</th>
-                            <th class="px-4 py-2 text-left">Image</th>
-                            <th class="px-4 py-2 text-left">Author</th>
-                            <th class="px-4 py-2 text-left">Created</th>
-                            <th class="px-4 py-2 text-left">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($blogs as $blog)
-                            <tr class="border-b border-gray-700 hover:bg-gray-700">
-                                <td class="px-4 py-2">{{ $blog->title }}</td>
-                                <td class="px-4 py-2">{{ $blog->content }}</td>
-                                <td class="px-4 py-2">
-                                    @if($blog->image)
-                                        <img src="{{ asset('storage/' . $blog->image) }}" class="w-16 h-16 object-cover rounded">
-                                    @else
-                                        <span class="text-gray-500">No image</span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-2">{{ $blog->author->name ?? 'Unknown' }}</td>
-                                <td class="px-4 py-2">{{ $blog->created_at->format('Y-m-d H:i') }}</td>
-                                <td class="px-4 py-2 flex gap-2">
-                                    <a href="{{ route('blogs.show', $blog) }}"
-                                       class="text-green-400 hover:underline">View</a>
-                                    @auth
-                                        @if($blog->author_id === auth()->id())
-                                            <a href="{{ route('blogs.edit', $blog) }}"
-                                               class="text-yellow-400 hover:underline">Edit</a>
-                                            <form action="{{ route('blogs.destroy', $blog) }}" method="POST" class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="text-red-400 hover:underline"
-                                                    onclick="return confirm('Delete this blog?')">
-                                                    Delete
-                                                </button>
-                                            </form>
-                                        @endif
-                                    @endauth
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-4 py-6 text-center text-gray-400">No blogs found.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+            <!-- Blog Grid -->
+            @if($blogs->count() > 0)
+                <div class="siks-grid-3 mb-8">
+                    @foreach($blogs as $blog)
+                        <x-blog-card :blog="$blog" />
+                    @endforeach
+                </div>
 
-            <div class="mt-6">
-                {{ $blogs->links() }}
-            </div>
+                <!-- Pagination -->
+                <div class="flex justify-center">
+                    {{ $blogs->links() }}
+                </div>
+            @else
+                <!-- Empty State -->
+                <div class="text-center py-16">
+                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="siks-heading-3 mb-4">No Articles Yet</h3>
+                    <p class="siks-body text-gray-600 mb-8 max-w-md mx-auto">
+                        We haven't published any articles yet. Check back soon for inspiring content and Islamic insights.
+                    </p>
+                    @can('create', App\Models\Blog::class)
+                        <a href="{{ route('blogs.create') }}" class="siks-btn-primary">
+                            Write the First Article
+                        </a>
+                    @endcan
+                </div>
+            @endif
         </div>
-    </div>
-</x-app-layout>
+    </x-section>
+</x-page-layout>

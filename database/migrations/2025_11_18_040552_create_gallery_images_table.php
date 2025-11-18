@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('gallery_images', function (Blueprint $table) {
+            $table->id();
+            $table->string('imageable_type')->nullable();
+            $table->unsignedBigInteger('imageable_id')->nullable();
+            $table->string('image_path');
+            $table->string('thumbnail_path')->nullable();
+            $table->text('caption')->nullable();
+            $table->string('alt_text')->nullable();
+            $table->foreignId('uploaded_by')->constrained('users');
+            $table->timestamps();
+            
+            $table->index(['imageable_type', 'imageable_id'], 'imageable_index');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('gallery_images');
+    }
+};

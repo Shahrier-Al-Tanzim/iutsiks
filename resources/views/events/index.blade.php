@@ -1,74 +1,159 @@
-{{-- resources/views/events/index.blade.php --}}
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-2xl text-green-400 dark:text-green-300 leading-tight">
-            {{ __('Events') }}
-        </h2>
-    </x-slot>
-    <div class="py-8 bg-green-900 min-h-screen">
-        <div class="max-w-4xl mx-auto px-4">
+@php
+    $fests = \App\Models\Fest::orderBy('title')->get();
+    $eventTypes = ['quiz', 'lecture', 'donation', 'competition', 'workshop'];
+    $registrationStatuses = ['open', 'closed', 'full'];
+@endphp
+
+<x-page-layout>
+    <x-slot name="title">Events - SIKS</x-slot>
+    
+    <!-- Page Header -->
+    <x-section background="primary" padding="medium">
+        <div class="text-center">
+            <h1 class="siks-heading-1 text-white mb-4">Events</h1>
+            <p class="siks-body text-white/90 max-w-2xl mx-auto">
+                Discover upcoming events, workshops, lectures, and competitions organized by SIKS.
+            </p>
+        </div>
+    </x-section>
+
+    <!-- Main Content -->
+    <x-section>
+        <div class="max-w-7xl mx-auto">
             @if(session('success'))
-                <div class="mb-4 p-3 rounded bg-green-800 text-green-100">
-                    {{ session('success') }}
+                <div class="mb-6 p-4 rounded-lg bg-green-50 border border-green-200">
+                    <p class="text-green-800">{{ session('success') }}</p>
                 </div>
             @endif
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl text-green-200">All Events</h3>
-                @auth
-                    <a href="{{ route('events.create') }}" class="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded shadow">+ New Event</a>
-                @endauth
+
+            <!-- Filters -->
+            <div class="siks-card p-6 mb-8">
+                <form method="GET" action="{{ route('events.index') }}" class="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-5 lg:gap-4">
+                    <!-- Fest Filter -->
+                    <div>
+                        <label for="fest_id" class="block text-sm font-medium text-gray-700 mb-2">Fest</label>
+                        <select name="fest_id" id="fest_id" class="siks-input">
+                            <option value="">All Fests</option>
+                            @foreach($fests as $fest)
+                                <option value="{{ $fest->id }}" {{ request('fest_id') == $fest->id ? 'selected' : '' }}>
+                                    {{ $fest->title }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Type Filter -->
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                        <select name="type" id="type" class="siks-input">
+                            <option value="">All Types</option>
+                            @foreach($eventTypes as $type)
+                                <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>
+                                    {{ ucfirst($type) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Registration Status Filter -->
+                    <div>
+                        <label for="registration_status" class="block text-sm font-medium text-gray-700 mb-2">Registration</label>
+                        <select name="registration_status" id="registration_status" class="siks-input">
+                            <option value="">All Status</option>
+                            <option value="open" {{ request('registration_status') == 'open' ? 'selected' : '' }}>Open</option>
+                            <option value="closed" {{ request('registration_status') == 'closed' ? 'selected' : '' }}>Closed</option>
+                            <option value="full" {{ request('registration_status') == 'full' ? 'selected' : '' }}>Full</option>
+                        </select>
+                    </div>
+
+                    <!-- Date Filter -->
+                    <div>
+                        <label for="date_filter" class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                        <select name="date_filter" id="date_filter" class="siks-input">
+                            <option value="">All Dates</option>
+                            <option value="upcoming" {{ request('date_filter') == 'upcoming' ? 'selected' : '' }}>Upcoming</option>
+                            <option value="past" {{ request('date_filter') == 'past' ? 'selected' : '' }}>Past</option>
+                            <option value="today" {{ request('date_filter') == 'today' ? 'selected' : '' }}>Today</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter Actions -->
+                    <div class="flex items-end space-x-2">
+                        <button type="submit" class="siks-btn-primary">
+                            Filter
+                        </button>
+                        <a href="{{ route('events.index') }}" class="siks-btn-ghost">
+                            Clear
+                        </a>
+                    </div>
+                </form>
             </div>
-            <div class="bg-gray-800 rounded-lg shadow overflow-x-auto">
-                <table class="min-w-full text-gray-200">
-                    <thead>
-                        <tr class="bg-green-900">
-                            <th class="px-4 py-2 text-left">Title</th>
-                            <th class="px-4 py-2 text-left">Date</th>
-                            <th class="px-4 py-2 text-left">Time</th>
-                            <th class="px-4 py-2 text-left">Image</th>
-                            <th class="px-4 py-2 text-left">Author</th>
-                            <th class="px-4 py-2 text-left">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($events as $event)
-                            <tr class="border-b border-gray-700 hover:bg-gray-700">
-                                <td class="px-4 py-2">{{ $event->title }}</td>
-                                <td class="px-4 py-2">{{ $event->event_date }}</td>
-                                <td class="px-4 py-2">{{ $event->event_time }}</td>
-                                <td class="px-4 py-2">
-                                    @if($event->image)
-                                        <img src="{{ asset('storage/' . $event->image) }}" class="w-16 h-16 object-cover rounded">
-                                    @else
-                                        <span class="text-gray-500">No image</span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-2">{{ $event->author->name ?? 'Unknown' }}</td>
-                                <td class="px-4 py-2 flex gap-2">
-                                    <a href="{{ route('events.show', $event) }}" class="text-green-400 hover:underline">View</a>
-                                    @auth
-                                        @if($event->author_id === auth()->id())
-                                            <a href="{{ route('events.edit', $event) }}" class="text-yellow-400 hover:underline">Edit</a>
-                                            <form action="{{ route('events.destroy', $event) }}" method="POST" class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-400 hover:underline" onclick="return confirm('Delete this event?')">Delete</button>
-                                            </form>
-                                        @endif
-                                    @endauth
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="px-4 py-6 text-center text-gray-400">No events found.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+
+            <!-- Header Actions -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                <div>
+                    <h2 class="siks-heading-2 mb-2">
+                        @if(request()->hasAny(['fest_id', 'type', 'registration_status', 'date_filter']))
+                            Filtered Events
+                        @else
+                            All Events
+                        @endif
+                    </h2>
+                    <p class="siks-body text-gray-600">
+                        {{ $events->total() }} {{ Str::plural('event', $events->total()) }} found
+                    </p>
+                </div>
+                @can('create', App\Models\Event::class)
+                    <a href="{{ route('events.create') }}" class="siks-btn-primary">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Create Event
+                    </a>
+                @endcan
             </div>
-            <div class="mt-6">
-                {{ $events->links() }}
-            </div>
+
+            <!-- Events Grid -->
+            @if($events->count() > 0)
+                <div class="siks-grid-3 mb-8">
+                    @foreach($events as $event)
+                        <x-event-card :event="$event" />
+                    @endforeach
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex justify-center">
+                    {{ $events->appends(request()->query())->links() }}
+                </div>
+            @else
+                <!-- Empty State -->
+                <div class="text-center py-16">
+                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="siks-heading-3 mb-4">
+                        @if(request()->hasAny(['fest_id', 'type', 'registration_status', 'date_filter']))
+                            No Events Match Your Filters
+                        @else
+                            No Events Yet
+                        @endif
+                    </h3>
+                    <p class="siks-body text-gray-600 mb-8 max-w-md mx-auto">
+                        @if(request()->hasAny(['fest_id', 'type', 'registration_status', 'date_filter']))
+                            Try adjusting your filters or <a href="{{ route('events.index') }}" class="text-siks-primary hover:underline">clear all filters</a> to see more events.
+                        @else
+                            We haven't scheduled any events yet. Check back soon for exciting upcoming events and activities.
+                        @endif
+                    </p>
+                    @can('create', App\Models\Event::class)
+                        <a href="{{ route('events.create') }}" class="siks-btn-primary">
+                            Create the First Event
+                        </a>
+                    @endcan
+                </div>
+            @endif
         </div>
-    </div>
-</x-app-layout>
+    </x-section>
+</x-page-layout>

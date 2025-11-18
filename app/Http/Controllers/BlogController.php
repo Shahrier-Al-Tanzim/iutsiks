@@ -4,21 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Blog;
 use Illuminate\Http\Request;
-// use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BlogController extends Controller
 {
-    // // Ensure user is authenticated for all actions except index/show
-    public function __construct()
-    {
-        $this->middleware('auth')->except(['index', 'show']);
-    }
+    use AuthorizesRequests;
 
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $this->authorize('viewAny', Blog::class);
+        
         $blogs = Blog::with('author')->latest()->paginate(10);
         return view('blogs.index', compact('blogs'));
     }
@@ -28,6 +26,8 @@ class BlogController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Blog::class);
+        
         return view('blogs.create');
     }
 
@@ -36,6 +36,8 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Blog::class);
+
         $request->validate([
             'title' => 'required',
             'content' => 'required',
@@ -58,6 +60,8 @@ class BlogController extends Controller
      */
     public function show(Blog $blog)
     {
+        $this->authorize('view', $blog);
+        
         $blog->load('author');
         return view('blogs.show', compact('blog'));
     }
@@ -67,11 +71,9 @@ class BlogController extends Controller
      */
     public function edit(Blog $blog)
     {
-        // Optional: Only allow the author to edit
-        if ($blog->author_id !== auth()->id()) {
-            abort(403);
-        }
-        return view('blogs.edit', compact(var_name: 'blog'));
+        $this->authorize('update', $blog);
+        
+        return view('blogs.edit', compact('blog'));
     }
 
     /**
@@ -79,9 +81,7 @@ class BlogController extends Controller
      */
     public function update(Request $request, Blog $blog)
     {
-        if ($blog->author_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $blog);
 
         $request->validate([
             'title' => 'required',
@@ -107,9 +107,8 @@ class BlogController extends Controller
      */
     public function destroy(Blog $blog)
     {
-        if ($blog->author_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('delete', $blog);
+        
         if($blog->image) {
             \Storage::disk('public')->delete($blog->image);
         }

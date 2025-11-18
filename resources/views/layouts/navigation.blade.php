@@ -1,20 +1,40 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+<nav x-data="{ open: false }" class="bg-white border-b border-gray-100 shadow-sm">
     <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="siks-container">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                    <a href="{{ route('home') }}" class="flex items-center">
+                        <div class="w-8 h-8 bg-siks-darker rounded-full flex items-center justify-center mr-3">
+                            <span class="text-white font-bold text-sm">S</span>
+                        </div>
+                        <span class="text-xl font-bold text-siks-darker">SIKS</span>
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
+                        {{ __('Home') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')">
+                        {{ __('Events') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('blogs.index')" :active="request()->routeIs('blogs.*')">
+                        {{ __('Blogs') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('prayer-times.index')" :active="request()->routeIs('prayer-times.*')">
+                        {{ __('Prayer Times') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('gallery.index')" :active="request()->routeIs('gallery.*')">
+                        {{ __('Gallery') }}
+                    </x-nav-link>
+                    @auth
+                        <x-nav-link :href="route('fests.index')" :active="request()->routeIs('fests.*')">
+                            {{ __('Fests') }}
+                        </x-nav-link>
+                    @endauth
                 </div>
             </div>
 
@@ -38,6 +58,46 @@
                             <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Profile') }}
                             </x-dropdown-link>
+                            
+                            <x-dropdown-link :href="route('registrations.history')">
+                                {{ __('My Registrations') }}
+                            </x-dropdown-link>
+
+                            @if(Auth::user()->isSuperAdmin())
+                                <x-dropdown-link :href="route('admin.dashboard')">
+                                    {{ __('Admin Dashboard') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.user-management')">
+                                    {{ __('User Management') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.analytics')">
+                                    {{ __('Analytics') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.activity-logs')">
+                                    {{ __('Activity Logs') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.system-settings')">
+                                    {{ __('System Settings') }}
+                                </x-dropdown-link>
+                            @endif
+
+                            @can('manage-prayer-times')
+                                <x-dropdown-link :href="route('admin.prayer-times.index')">
+                                    {{ __('Manage Prayer Times') }}
+                                </x-dropdown-link>
+                            @endcan
+
+                            @can('manage-events')
+                                <x-dropdown-link :href="route('admin.registrations.index')">
+                                    {{ __('Manage Registrations') }}
+                                </x-dropdown-link>
+                            @endcan
+
+                            @can('create', App\Models\GalleryImage::class)
+                                <x-dropdown-link :href="route('gallery.create')">
+                                    {{ __('Upload Images') }}
+                                </x-dropdown-link>
+                            @endcan
 
                             <!-- Authentication -->
                             <form method="POST" action="{{ route('logout') }}">
@@ -53,10 +113,10 @@
                         </x-slot>
                     </x-dropdown>
                 @else
-                    <a href="{{ route('login') }}?redirect_to={{ url()->current() }}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
+                    <a href="{{ route('login') }}?redirect_to={{ url()->current() }}" class="siks-btn-ghost">
                         {{ __('Log In') }}
                     </a>
-                    <a href="{{ route('register') }}?redirect_to={{ url()->current() }}" class="ms-4 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
+                    <a href="{{ route('register') }}?redirect_to={{ url()->current() }}" class="ms-4 siks-btn-primary">
                         {{ __('Register') }}
                     </a>
                 @endauth
@@ -77,9 +137,29 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
+            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
+                {{ __('Home') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')">
+                {{ __('Events') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('blogs.index')" :active="request()->routeIs('blogs.*')">
+                {{ __('Blogs') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('prayer-times.index')" :active="request()->routeIs('prayer-times.*')">
+                {{ __('Prayer Times') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('gallery.index')" :active="request()->routeIs('gallery.*')">
+                {{ __('Gallery') }}
+            </x-responsive-nav-link>
+            @auth
+                <x-responsive-nav-link :href="route('fests.index')" :active="request()->routeIs('fests.*')">
+                    {{ __('Fests') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+            @endauth
         </div>
 
         <!-- Responsive Settings Options -->
@@ -94,6 +174,46 @@
                     <x-responsive-nav-link :href="route('profile.edit')">
                         {{ __('Profile') }}
                     </x-responsive-nav-link>
+                    
+                    <x-responsive-nav-link :href="route('registrations.history')">
+                        {{ __('My Registrations') }}
+                    </x-responsive-nav-link>
+
+                    @if(Auth::user()->isSuperAdmin())
+                        <x-responsive-nav-link :href="route('admin.dashboard')">
+                            {{ __('Admin Dashboard') }}
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('admin.user-management')">
+                            {{ __('User Management') }}
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('admin.analytics')">
+                            {{ __('Analytics') }}
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('admin.activity-logs')">
+                            {{ __('Activity Logs') }}
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('admin.system-settings')">
+                            {{ __('System Settings') }}
+                        </x-responsive-nav-link>
+                    @endif
+
+                    @can('manage-prayer-times')
+                        <x-responsive-nav-link :href="route('admin.prayer-times.index')">
+                            {{ __('Manage Prayer Times') }}
+                        </x-responsive-nav-link>
+                    @endcan
+
+                    @can('manage-events')
+                        <x-responsive-nav-link :href="route('admin.registrations.index')">
+                            {{ __('Manage Registrations') }}
+                        </x-responsive-nav-link>
+                    @endcan
+
+                    @can('create', App\Models\GalleryImage::class)
+                        <x-responsive-nav-link :href="route('gallery.create')">
+                            {{ __('Upload Images') }}
+                        </x-responsive-nav-link>
+                    @endcan
 
                     <!-- Authentication -->
                     <form method="POST" action="{{ route('logout') }}">

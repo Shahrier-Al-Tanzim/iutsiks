@@ -14,6 +14,15 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                'siks': {
+                    'primary': '#76C990',
+                    'secondary': '#414141',
+                    'light': '#8DD4A3',
+                    'dark': '#5FB57A',
+                    'darker': '#004d40',
+                },
+            },
         },
     },
 

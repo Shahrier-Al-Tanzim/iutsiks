@@ -28,23 +28,12 @@ class ContactController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(\App\Http\Requests\ContactFormRequest $request)
     {
-        //validate the request data
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email'
-        ]);
-
-        // save tp the database
-        Contact::create([
-            'name' => $request->name,
-            'email' => $request->email
-        ]);
+        // Create contact from validated data
+        Contact::create($request->validated());
 
         return redirect()->back()->with('success', 'Contact created successfully!');
-        // return back()->with('success', 'Contact saved!');
-
     }
 
     /**
