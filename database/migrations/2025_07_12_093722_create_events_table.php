@@ -13,12 +13,17 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->text('title');
             $table->text('description');
             $table->date(column: 'event_date');
             $table->time(column: 'event_time');
+             // ✅ Create the column first
+            $table->unsignedBigInteger('created_by');
+            
+            // ✅ Then add the foreign key constraint
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            
+            $table->timestamps();
         });
     }
 
