@@ -1,83 +1,83 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Payment Verification') }}
-        </h2>
-    </x-slot>
+<x-page-layout>
+    <x-slot name="title">Payment Verification - Admin - SIKS</x-slot>
+    
+    <!-- Page Header -->
+    <x-section background="primary" padding="medium">
+        <div class="text-center">
+            <h1 class="siks-heading-1 text-white mb-4">Payment Verification</h1>
+            <p class="siks-body text-white/90">
+                Review and verify payment submissions from participants
+            </p>
+        </div>
+    </x-section>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow overflow-hidden sm:rounded-md">
-                <div class="px-4 py-5 sm:p-6">
-                    <!-- Header -->
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h3 class="text-lg leading-6 font-medium text-gray-900">Pending Payment Verifications</h3>
-                            <p class="mt-1 text-sm text-gray-500">
-                                Review and verify payment submissions from participants
-                            </p>
-                        </div>
-                        <div class="flex space-x-3">
-                            <a href="{{ route('admin.registrations.index') }}" 
-                               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                                </svg>
-                                Back to All Registrations
-                            </a>
-                        </div>
+    <!-- Main Content -->
+    <x-section>
+        <div class="max-w-7xl mx-auto">
+            <div class="siks-card p-6">
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                    <div>
+                        <h2 class="siks-heading-2 mb-2">Pending Payment Verifications</h2>
+                        <p class="siks-body text-gray-600">Review and verify payment submissions from participants</p>
                     </div>
+                    <a href="{{ route('admin.registrations.index') }}" class="siks-btn-ghost">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Back to All Registrations
+                    </a>
+                </div>
 
-                    <!-- Filters -->
-                    @if($events->count() > 0)
-                    <form method="GET" class="mb-6">
-                        <div class="flex items-center space-x-4">
-                            <div class="flex-1">
-                                <select name="event_id" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                    <option value="">All Events</option>
-                                    @foreach($events as $event)
-                                        <option value="{{ $event->id }}" {{ request('event_id') == $event->id ? 'selected' : '' }}>
-                                            {{ $event->title }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
-                                Filter
-                            </button>
-                            <a href="{{ route('admin.registrations.payment-verification') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                Clear
-                            </a>
+                <!-- Filters -->
+                @if($events->count() > 0)
+                <div class="siks-card p-4 mb-6">
+                    <form method="GET" class="flex flex-col sm:flex-row items-end gap-4">
+                        <div class="flex-1">
+                            <label class="siks-label" for="event_id">Filter by Event</label>
+                            <select name="event_id" id="event_id" class="siks-select">
+                                <option value="">All Events</option>
+                                @foreach($events as $event)
+                                    <option value="{{ $event->id }}" {{ request('event_id') == $event->id ? 'selected' : '' }}>
+                                        {{ $event->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="submit" class="siks-btn-primary">Filter</button>
+                            <a href="{{ route('admin.registrations.payment-verification') }}" class="siks-btn-ghost">Clear</a>
                         </div>
                     </form>
-                    @endif
+                </div>
+                @endif
 
-                    <!-- Bulk Actions -->
-                    @if($pendingPayments->count() > 0)
-                    <div class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h4 class="text-sm font-medium text-yellow-800">Bulk Actions</h4>
-                                <p class="text-sm text-yellow-700">Select multiple payments to approve them at once</p>
-                            </div>
-                            <button type="button" onclick="openBulkApproveModal()" 
-                                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
-                                    id="bulkApproveBtn" disabled>
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
-                                Approve Selected (<span id="selectedCount">0</span>)
-                            </button>
+                <!-- Bulk Actions -->
+                @if($pendingPayments->count() > 0)
+                <div class="siks-card p-4 mb-6 bg-yellow-50 border border-yellow-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h3 class="siks-heading-4 text-yellow-800 mb-1">Bulk Actions</h3>
+                            <p class="siks-body-small text-yellow-700">Select multiple payments to approve them at once</p>
                         </div>
+                        <button type="button" onclick="openBulkApproveModal()" 
+                                class="siks-btn-primary disabled:opacity-50"
+                                id="bulkApproveBtn" disabled>
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Approve Selected (<span id="selectedCount">0</span>)
+                        </button>
                     </div>
-                    @endif
+                </div>
+                @endif
 
-                    <!-- Pending Payments List -->
-                    @if($pendingPayments->count() > 0)
-                    <div class="space-y-6">
-                        @foreach($pendingPayments as $registration)
-                        <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
-                            <div class="p-6">
+                <!-- Pending Payments List -->
+                @if($pendingPayments->count() > 0)
+                <div class="space-y-6">
+                    @foreach($pendingPayments as $registration)
+                    <div class="siks-card p-6">
+                        <div class="space-y-4">
                                 <div class="flex items-start justify-between">
                                     <div class="flex items-start space-x-4">
                                         <div class="flex-shrink-0">
@@ -193,27 +193,22 @@
     </div>
 
     <!-- Approve Payment Modal -->
-    <div id="approveModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div id="approveModal" class="siks-modal hidden">
+        <div class="siks-modal-content">
             <div class="mt-3">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Approve Payment</h3>
-                <form id="approveForm" method="POST">
+                <h3 class="siks-heading-3 mb-4">Approve Payment</h3>
+                <form id="approveForm" method="POST" class="space-y-4">
                     @csrf
-                    <div class="mb-4">
-                        <label for="approve_notes" class="block text-sm font-medium text-gray-700 mb-2">
-                            Admin Notes (Optional)
-                        </label>
-                        <textarea id="approve_notes" name="admin_notes" rows="3"
-                                  class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    <div class="siks-form-group">
+                        <label class="siks-label" for="approve_notes">Admin Notes (Optional)</label>
+                        <textarea id="approve_notes" name="admin_notes" rows="3" class="siks-textarea"
                                   placeholder="Add any notes about this approval..."></textarea>
                     </div>
                     <div class="flex justify-end space-x-3">
-                        <button type="button" onclick="closeApproveModal()" 
-                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                        <button type="button" onclick="closeApproveModal()" class="siks-btn-ghost">
                             Cancel
                         </button>
-                        <button type="submit" 
-                                class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700">
+                        <button type="submit" class="siks-btn-primary">
                             Approve Payment
                         </button>
                     </div>
@@ -346,4 +341,4 @@
             });
         });
     </script>
-</x-app-layout>
+</x-page-layout>

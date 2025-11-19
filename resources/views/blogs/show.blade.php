@@ -1,35 +1,104 @@
-{{-- resources/views/blogs/show.blade.php --}}
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-2xl text-green-400 dark:text-green-300 leading-tight">
-            {{ __('Blog Details') }}
-        </h2>
-    </x-slot>
-    <div class="py-8 bg-gray-900 min-h-screen">
-        <div class="max-w-2xl mx-auto px-4">
-            <div class="bg-gray-800 rounded-lg shadow p-8">
-                <h3 class="text-2xl text-green-200 mb-4">{{ $blog->title }}</h3>
-                <div class="mb-4 text-gray-300">By {{ $blog->author->name ?? 'Unknown' }} on {{ $blog->created_at->format('Y-m-d H:i') }}</div>
-                <div class="mb-8 text-gray-100 whitespace-pre-line">{{ $blog->content }}</div>
-                @if ($blog->image)
-                    <div class="mb-6">
-                        <img src="{{ asset('storage/' . $blog->image) }}" class="max-w-xs max-h-48 mx-auto object-cover rounded">
-                    </div>
-                @endif
-                <div class="flex gap-2">
-                    <a href="{{ route('blogs.index') }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded">Back</a>
-                    @auth
-                        @if($blog->author_id === auth()->id())
-                            <a href="{{ route('blogs.edit', $blog) }}" class="bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-2 rounded">Edit</a>
-                            <form action="{{ route('blogs.destroy', $blog) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded" onclick="return confirm('Delete this blog?')">Delete</button>
-                            </form>
-                        @endif
-                    @endauth
+<x-page-layout>
+    <x-slot name="title">{{ $blog->title }} - SIKS</x-slot>
+    
+    <!-- Page Header -->
+    <x-section background="primary" padding="medium">
+        <div class="text-center">
+            <h1 class="siks-heading-1 text-white mb-4">{{ $blog->title }}</h1>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 text-white/90">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                    </svg>
+                    By {{ $blog->author->name ?? 'Unknown' }}
+                </div>
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                    </svg>
+                    {{ $blog->created_at->format('F j, Y') }}
                 </div>
             </div>
         </div>
-    </div>
-</x-app-layout>
+    </x-section>
+
+    <!-- Main Content -->
+    <x-section>
+        <div class="max-w-4xl mx-auto">
+            <div class="siks-card p-8">
+                <!-- Blog Image -->
+                @if ($blog->image)
+                    <div class="mb-8">
+                        <img src="{{ asset('storage/' . $blog->image) }}" 
+                             class="w-full h-64 object-cover rounded-lg" 
+                             alt="{{ $blog->title }}">
+                    </div>
+                @endif
+
+                <!-- Blog Content -->
+                <div class="prose prose-lg max-w-none">
+                    <div class="siks-body text-gray-700 whitespace-pre-line leading-relaxed">
+                        {{ $blog->content }}
+                    </div>
+                </div>
+
+                <!-- Blog Meta -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                            </svg>
+                            Written by {{ $blog->author->name ?? 'Unknown' }}
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                            </svg>
+                            Published on {{ $blog->created_at->format('F j, Y \a\t g:i A') }}
+                        </div>
+                        @if($blog->updated_at != $blog->created_at)
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                                </svg>
+                                Last updated {{ $blog->updated_at->format('F j, Y') }}
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-4 mt-8">
+                <a href="{{ route('blogs.index') }}" class="siks-btn-ghost">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Blogs
+                </a>
+                
+                @auth
+                    @if($blog->author_id === auth()->id() || auth()->user()->isSuperAdmin())
+                        <a href="{{ route('blogs.edit', $blog) }}" class="siks-btn-outline">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            Edit Blog
+                        </a>
+                        <form action="{{ route('blogs.destroy', $blog) }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="siks-btn-base bg-red-600 text-white hover:bg-red-700 focus:ring-red-500" onclick="return confirm('Are you sure you want to delete this blog post? This action cannot be undone.')">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                Delete Blog
+                            </button>
+                        </form>
+                    @endif
+                @endauth
+            </div>
+        </div>
+    </x-section>
+</x-page-layout>

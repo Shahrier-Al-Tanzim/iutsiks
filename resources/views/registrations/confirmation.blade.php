@@ -1,48 +1,51 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Registration Confirmation') }}
-        </h2>
-    </x-slot>
+<x-page-layout>
+    <x-slot name="title">Registration Confirmation - SIKS</x-slot>
+    
+    <!-- Page Header -->
+    <x-section background="primary" padding="medium">
+        <div class="text-center">
+            <h1 class="siks-heading-1 text-white mb-4">Registration Confirmed!</h1>
+            <p class="siks-body text-white/90">
+                Your registration for {{ $registration->event->title }} has been submitted successfully
+            </p>
+        </div>
+    </x-section>
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    
-                    <!-- Success Message -->
-                    <div class="mb-8 bg-green-50 border border-green-200 rounded-md p-6">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-8 w-8 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <h3 class="text-lg font-medium text-green-800">Registration Submitted Successfully!</h3>
-                                <div class="mt-2 text-sm text-green-700">
-                                    <p>Thank you for registering for <strong>{{ $registration->event->title }}</strong>. Your registration has been submitted and is currently under review.</p>
-                                    @if($registration->payment_required)
-                                        <p class="mt-2">Since this event requires payment, your registration will be approved once the payment is verified by our admin team.</p>
-                                    @endif
-                                </div>
+    <!-- Main Content -->
+    <x-section>
+        <div class="max-w-4xl mx-auto">
+            <div class="siks-card p-8">
+                <!-- Success Message -->
+                <div class="siks-card p-6 mb-8 bg-green-50 border border-green-200">
+                    <div class="flex items-start">
+                        <svg class="w-8 h-8 text-green-600 mr-4 mt-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <div>
+                            <h2 class="siks-heading-3 text-green-800 mb-3">Registration Submitted Successfully!</h2>
+                            <div class="siks-body text-green-700 space-y-2">
+                                <p>Thank you for registering for <strong>{{ $registration->event->title }}</strong>. Your registration has been submitted and is currently under review.</p>
+                                @if($registration->payment_required)
+                                    <p>Since this event requires payment, your registration will be approved once the payment is verified by our admin team.</p>
+                                @endif
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Registration Summary -->
-                    <div class="mb-8">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-6">Registration Summary</h3>
-                        
-                        <div class="bg-gray-50 rounded-lg p-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 mb-3">Event Details</h4>
-                                    <div class="space-y-2 text-sm">
-                                        <div>
-                                            <span class="font-medium text-gray-700">Event:</span>
-                                            <span class="text-gray-600">{{ $registration->event->title }}</span>
-                                        </div>
+                <!-- Registration Summary -->
+                <div class="mb-8">
+                    <h2 class="siks-heading-2 mb-6">Registration Summary</h2>
+                    
+                    <div class="siks-card p-6 bg-gray-50">
+                        <div class="siks-grid-2 gap-6">
+                            <div>
+                                <h3 class="siks-heading-4 mb-4">Event Details</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="siks-body font-medium text-gray-700">Event:</span>
+                                        <span class="siks-body text-gray-600">{{ $registration->event->title }}</span>
+                                    </div>
                                         
                                         @if($registration->event->fest)
                                         <div>
